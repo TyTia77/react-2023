@@ -1,25 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
+import { useState, MouseEvent } from 'react';
 import './App.css';
+import { Test } from './components/test/test'
+import { Display } from './components/display/display'
+import { UseRef, UseContext, UseReducer } from './components/modules'
 
 function App() {
+  const [count, setCount] = useState(0)
+
+  const increment = () => {
+    setCount(count + 1);
+  }
+
+  const dec = (e: MouseEvent<HTMLElement>) => {
+    console.error({e});
+    setCount(count - 1);
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      {/* <Test /> */}
+      <Display count={count} />
+      <button onClick={increment}>add</button>
+      <button onClick={dec}>sub</button>
+
+      <UseRef />
+      <UseContext />
+      <UseReducer />
+    </>
   );
 }
 
