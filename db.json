@@ -26,12 +26,18 @@
   "profile": {
     "name": "typicode"
   },
+  "notes": [
+    {
+      "id": "7",
+      "text": "tt"
+    }
+  ],
   "users": [
     {
       "id": "1",
       "username": "ty",
       "password": "ty",
-      "email": "jst.tea@live.com"
+      "email": "ty@live.com"
     }
   ]
 }
