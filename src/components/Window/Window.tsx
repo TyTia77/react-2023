@@ -1,21 +1,27 @@
-import './Window.css';
+import "./Window.css";
 
-export function Window(props: { x: number, y: number, label?: string }) {
+export function Window(props: {
+  x: number;
+  y: number;
+  label?: string;
+  children?: any;
+}) {
+  const { x, y, label, children } = props;
 
-    const { x, y, label } = props
+  return (
+    <div
+      className="Window"
+      style={{
+        border: "1px solid black",
+        top: y,
+        left: x,
+      }}
+    >
+      <div>{label}</div>
+      {/* <div>x {x}</div>
+            <div>y {y}</div> */}
 
-    return (
-        <div
-            className="Window"
-            style={{
-                border: '1px solid black',
-                top: y,
-                left: x
-            }}
-        >
-            <div>{label}</div>
-            <div>x {x}</div>
-            <div>y {y}</div>
-        </div>
-    );
+      {children}
+    </div>
+  );
 }
