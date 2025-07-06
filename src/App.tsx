@@ -3,7 +3,7 @@ import logo from "./logo.svg";
 import "./App.css";
 import { Test } from "./utils";
 
-import { Window } from "./components/index";
+import { Window, Menu } from "./components/index";
 
 import { throttle, debounce } from "./utils";
 
@@ -53,114 +53,63 @@ function App() {
   // queueMicrotask
 
   const initialized: any = React.useRef(false);
-  // const initialized: React.RefObject<Boolean> = React.useRef(false);
 
-  const [menuX, setmenuX] = React.useState(0)
-  const [menuY, setmenuY] = React.useState(0)
+  const [notes, setnotes]: any = React.useState([]);
 
-  const [test, settest]: any = React.useState([])
-
-  const [notes, setnotes]: any = React.useState([])
-
-
-  const notetext: any = React.useRef(null)
-
-
-  const [initialMenuPosX, setinitialMenuPosX] = React.useState(0)
-  const [initialMenuPosY, setinitialMenuPosY] = React.useState(0)
-
-  function handlemouseDown(e: React.MouseEvent<HTMLElement>) {
-
-    setinitialMenuPosX(e.clientX - menuX)
-    setinitialMenuPosY(e.clientY - menuY)
-    // console.log({ e });
-  }
-
-  function handleMouseMove(this: any, e: React.MouseEvent<HTMLElement>) {
-    if (e.buttons) {
-      setmenuX(e.clientX - initialMenuPosX);
-      setmenuY(e.clientY - initialMenuPosY);
-    }
-  }
-
-  function handleMouseUp(e: React.MouseEvent<HTMLElement>) {
-    setinitialMenuPosX(0)
-    setinitialMenuPosY(0)
-  }
+  const notetext: any = React.useRef(null);
 
   function handleKeyUp(e: React.MouseEvent<HTMLElement>) {
-    console.log('fetching data');
+    console.log("fetching data");
   }
 
-  function getRand(max: number, min?: number) {
-    return Math.floor(Math.random() * (max - (min || 0) + 1) + (min || 0))
-  }
-
-
-  function handleButton(e: React.MouseEvent<HTMLElement>) {
-
-    let x = getRand(300)
-    let y = getRand(300)
-
-    settest((prev: any) => prev.concat({ label: '', x, y }))
-    // console.log('button', { e });
-  }
-
-  const throttledmouse = throttle(handleMouseMove, 80)
-  const debouncedkey = debounce(handleKeyUp, 500)
-
+  const debouncedkey = debounce(handleKeyUp, 500);
 
   function fetchnotes() {
-    fetch('http://localhost:4000/notes')
+    fetch("http://localhost:4000/notes")
       .then((res) => {
-        return res.json()
+        return res.json();
       })
       .then((res) => {
-        setnotes(res.reverse())
-      })
+        setnotes(res.reverse());
+      });
   }
 
   function addnotes(text: string) {
+    const id = String(Number(notes[notes.length - 1].id) + 1);
 
-    const id = String(Number(notes[notes.length -1].id) + 1)
-
-    fetch('http://localhost:4000/notes', {
-      method: 'POST',
+    fetch("http://localhost:4000/notes", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ id, text })
-    })
-    .then(() => {
-      notetext.current.value = ''
-      fetchnotes()
-    })
+      body: JSON.stringify({ id, text }),
+    }).then(() => {
+      notetext.current.value = "";
+      fetchnotes();
+    });
   }
 
   function deletenotes(id: string) {
     console.log(`http://localhost:4000/notes/${id}`);
-    
+
     fetch(`http://localhost:4000/notes/${id}`, {
-      method: 'DELETE'
-    })
-    .then(() => {
-      fetchnotes()
-    })
+      method: "DELETE",
+    }).then(() => {
+      fetchnotes();
+    });
   }
 
   function handlenoteclick(e: React.MouseEvent<HTMLElement>) {
-    const val = notetext.current.value
+    const val = notetext.current.value;
 
     if (val.length > 0) {
-      addnotes(val)
+      addnotes(val);
     }
-    // console.log({notetext});
   }
 
-
   function handlenoteremove(e: any) {
-    const i = e.target.dataset.id
-    deletenotes(i)    
+    const i = e.target.dataset.id;
+    deletenotes(i);
   }
 
   useEffect(() => {
@@ -173,43 +122,31 @@ function App() {
     // });
 
     if (!initialized.current) {
-      console.log({ test })
-      initialized.current = true
+      initialized.current = true;
 
-      fetchnotes()
+      fetchnotes();
     }
 
     return () => {
-      console.log('clean');
-    }
-
+      // console.log('clean');
+    };
   }, []);
 
   return (
-    <div
-      className="App"
-      onMouseDownCapture={handlemouseDown}
-      onMouseUp={handleMouseUp}
-      onMouseMove={throttledmouse}>
-      <Window label={'menu'} x={menuX} y={menuY} />
+    <div className="App">
       <input ref={notetext} type="text" onKeyUp={debouncedkey} />
       <button onClick={handlenoteclick}>add</button>
-      {test.map((t: any) => <Window x={t.x} y={t.y} />)}
 
-      {
-        notes.map((m: any) => {
-          return (
-            <div>{m.text}
-              <button data-id={m.id} onClick={handlenoteremove}>remove</button>
-            </div>
-          )
-        })
-      }
-
-      <button
-        onClick={handleButton}
-        style={{ position: 'absolute', display: 'block', bottom: 0, right: 0 }}>add window</button>
-
+      {notes.map((m: any) => {
+        return (
+          <div>
+            {m.text}
+            <button data-id={m.id} onClick={handlenoteremove}>
+              remove
+            </button>
+          </div>
+        );
+      })}
     </div>
   );
 }
