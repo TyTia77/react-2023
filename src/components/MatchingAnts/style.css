@@ -1,0 +1,94 @@
+.ants-top {
+  position: absolute;
+  border-top: 2px dashed #6688ee;
+  top: 0;
+  width: 450px;
+}
+
+.ants-left {
+  position: absolute;
+  transform: rotate(90deg);
+  border-top: 2px dashed #6688ee;
+  top: 100px;
+  left: -224px;
+  width: 450px;
+}
+
+.ants-right {
+  position: absolute;
+  transform: rotate(270deg);
+  border-top: 2px dashed #6688ee;
+  top: 100px;
+  width: 450px;
+  right: -224px;
+}
+
+.ants-bottom {
+  position: absolute;
+  border-top: 2px dashed #6688ee;
+  bottom: 0px;
+  width: 450px;
+}
+
+.marchingants_right {
+  animation-name: march-right;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+.marchingants_left {
+  animation-name: march-left;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+.marchingants_up {
+  animation-name: march-up;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+.marchingants_down {
+  animation-name: march-down;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+@keyframes march-right {
+  from {
+    left: -100px;
+  }
+  to {
+    left: 0px;
+  }
+}
+@keyframes march-left {
+  from {
+    left: 0px;
+  }
+  to {
+    left: -100px;
+  }
+}
+
+@keyframes march-up {
+  from {
+    transform: rotate(90deg) translateX(100px);
+  }
+  to {
+    transform: rotate(90deg) translateX(-0px);
+  }
+}
+
+@keyframes march-down {
+  from {
+    transform: rotate(270deg) translateX(0);
+  }
+  to {
+    transform: rotate(270deg) translateX(-100px);
+  }
+}

@@ -1,7 +1,6 @@
 .Window {
     position: absolute;
     background-color: white;
-    padding: 20px;
     user-select: none;
     cursor: pointer;
 }

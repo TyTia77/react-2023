@@ -1,27 +1,38 @@
+import React, { memo } from "react";
 import "./Window.css";
+import { MarchingAnts } from "components";
 
-export function Window(props: {
+export interface IWindowProps {
   x: number;
   y: number;
-  label?: string;
-  children?: any;
-}) {
-  const { x, y, label, children } = props;
+  label?: string
+  children?: React.ReactNode;
+  selected?: boolean;
+}
+
+export const Window = memo(function(props: IWindowProps){
+  const { x, y, label, children, selected } = props;
 
   return (
     <div
       className="Window"
       style={{
-        border: "1px solid black",
+        border: selected ? "none" : "1px solid black",
         top: y,
         left: x,
       }}
     >
-      <div>{label}</div>
-      {/* <div>x {x}</div>
-            <div>y {y}</div> */}
-
-      {children}
+      {selected ? (
+        <MarchingAnts>
+          <div>{label}</div>
+          {children}
+        </MarchingAnts>
+      ) : (
+        <>
+          <div>{label}</div>
+          {children}
+        </>
+      )}
     </div>
   );
-}
+})

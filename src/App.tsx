@@ -3,7 +3,7 @@ import logo from "./logo.svg";
 import "./App.css";
 import { Test } from "./utils";
 
-import { Window, Menu } from "./components/index";
+import { Window } from "./components/index";
 
 import { throttle, debounce } from "./utils";
 
