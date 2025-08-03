@@ -1,3 +1,4 @@
-export { Window as Window }  from './Window/Window'
-export { Menu as Menu } from './Menu/menu'
-export { MenuPage as MenuPage } from './Menu/menupage'
+export * from "./Window/Window";
+export * from "./MenuWindow/menuWindow";
+export * from "./MouseMoveProvider/mouseMoveProvider";
+export * from "./MatchingAnts/matchingAnts";

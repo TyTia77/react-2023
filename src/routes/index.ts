@@ -1,2 +1,6 @@
-export  { Page1 as Page1 }  from './page1/page1'
-export  { Page2 as Page2 }  from './page2/page2'
+export * from "./menu/menu";
+export * from "./page1/page1";
+export * from "./page2/page2";
+export * from "./page3/page3";
+export * from "./page4/page4";
+export * from "./page5/page5";

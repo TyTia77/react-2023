@@ -1,24 +1,21 @@
-export { debounce as debounce } from './debounce'
-export { throttle as throttle } from './throttle'
+export { debounce as debounce } from "./debounce";
+export { throttle as throttle } from "./throttle";
 
 // class
 export class Test {
-  private message: string
+  private message: string;
 
   constructor(mes: string) {
-    this.message = mes
+    this.message = mes;
   }
 
   greet() {
-    return 'hi, ' + this.message;
+    return "hi, " + this.message;
   }
 
   reverse() {
     // do reverse
-    this.message = this.message
-      .split('')
-      .reverse()
-      .join('')
+    this.message = this.message.split("").reverse().join("");
 
     return this;
   }
@@ -26,7 +23,7 @@ export class Test {
 
 // trigger after delay of XXms
 // export function debounce(fn: Function, delay = 500) {
-  
+
 //   let timer: any
 
 //   return function (this: any) {
@@ -53,7 +50,7 @@ export class Test {
 //     if (flag) {
 //       fn.apply(context, args)
 //       flag = false
-      
+
 //       setTimeout(function () {
 //         flag = true
 //       }, limit)
@@ -75,3 +72,7 @@ export class Test {
 //         }
 //     }
 // }
+
+export function getRand(max: number, min?: number) {
+  return Math.floor(Math.random() * (max - (min || 0) + 1) + (min || 0));
+}

@@ -1,7 +1,11 @@
 import React from "react";
 
-export function Component(props: { params1?: number }) {
-  const { params1 } = props;
+interface IComponentProps {
+  children?: React.ReactNode;
+}
+
+export function Component(props: IComponentProps) {
+  const { children } = props;
 
   return <div>component</div>;
 }
