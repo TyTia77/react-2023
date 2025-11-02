@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { increment } from "store/reducers";
 import { RootState } from "index";
 
-export function Page4() {
+function Page4() {
   const count = useSelector((state: RootState) => state.counter.value);
   const dispatch = useDispatch();
 
@@ -24,3 +24,5 @@ export function Page4() {
     </>
   );
 }
+
+export default Page4

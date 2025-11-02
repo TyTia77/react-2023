@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { Window, IWindowProps, MouseMoveContext } from "components";
 import { throttle, getRand } from "utils";
+import { useToggle, useWindowSize, useEventListener } from 'hooks';
 
 interface IwindowsProps extends IWindowProps {
   id: number;
@@ -16,14 +17,25 @@ interface IwindowsProps extends IWindowProps {
   my: number;
 }
 
-export function Page2() {
-  const mousemove = useContext(MouseMoveContext);
-  const { x, y, toggleactive } = mousemove;
+function Page2() {
+
+  const { x, y, toggleactive } = useContext(MouseMoveContext);
+  const { width, height } = useWindowSize()
+
+  console.log({
+    width, height
+  });
+
+
+  // useEventListener("mousemove", (e: any) => {
+  //   console.log({window, e});
+  // })
+  
 
   const initID = useRef(0);
 
   // recording mouse movement from provider
-  const [active, setActive] = useState(false);
+  const [active, setActive] = useToggle();
 
   const [windows, setwindows] = useState<IwindowsProps[]>([]);
   const [activeWindow, setActiveWindow] = useState<IwindowsProps[]>([]);
@@ -125,7 +137,8 @@ export function Page2() {
         (t) =>
           t && (
             <div onClick={handleMove.bind(t.id)}>
-              <Window label={t.label} x={t.x} y={t.y} />
+              <Window label={t.label} x={t.x} y={t.y} >
+              </Window>
             </div>
           )
       )}
@@ -133,7 +146,8 @@ export function Page2() {
         activeWindow.map((t: any) => {
           return (
             <div onClick={handleMouseUp}>
-              <Window label={t.label} x={t.x} y={t.y} selected={true} />
+              <Window label={t.label} x={t.x} y={t.y} selected={true} >
+              </Window>
             </div>
           );
         })
@@ -143,3 +157,5 @@ export function Page2() {
     </div>
   );
 }
+
+export default Page2

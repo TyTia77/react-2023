@@ -4,7 +4,7 @@ interface IPage5Props {
   children?: React.ReactNode;
 }
 
-export function Page5(props: IPage5Props) {
+function Page5(props: IPage5Props) {
   const { children } = props;
 
   let test: unknown = 3
@@ -58,3 +58,5 @@ export function Page5(props: IPage5Props) {
 
   return <div>Page5</div>;
 }
+
+export default Page5

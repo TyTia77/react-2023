@@ -1,6 +1,6 @@
 import React from "react";
 
-export function Page1(props: { params1?: number }) {
+function Page1(props: { params1?: number }) {
   const { params1 } = props;
 
   const [notes, setnotes]: any = React.useState([]);
@@ -55,3 +55,5 @@ export function Page1(props: { params1?: number }) {
     </div>
   );
 }
+
+export default Page1;

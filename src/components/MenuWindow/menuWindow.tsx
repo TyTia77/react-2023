@@ -7,7 +7,7 @@ import React, {
   useEffect,
 } from "react";
 import { Window } from "components";
-import { Menu } from "routes";
+import { Menu } from "routes/menu/menu";
 import { throttle } from "utils";
 
 
