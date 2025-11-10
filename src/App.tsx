@@ -7,6 +7,8 @@ import { Window } from "./components/index";
 
 import { throttle, debounce } from "./utils";
 
+import { useFetch } from "./hooks";
+
 function App() {
   // const prom = new Promise(function(res, rej){
   //   setTimeout(function(){
@@ -54,12 +56,21 @@ function App() {
 
   const initialized: any = React.useRef(false);
 
-  const [notes, setnotes]: any = React.useState([]);
-
+  const notebkup: any = React.useRef([]);
   const notetext: any = React.useRef(null);
+  const noteRefs: any = React.useRef([]);
+  const [notes, setnotes]: any[] = React.useState([]);
+  
 
-  function handleKeyUp(e: React.MouseEvent<HTMLElement>) {
+
+  function handleKeyUp(e: any) {
     console.log("fetching data");
+
+    if (e.key === "Backspace" && !notetext.current.value.length) {
+      setnotes(notebkup.current);
+    } else {
+      search();
+    }
   }
 
   const debouncedkey = debounce(handleKeyUp, 500);
@@ -70,19 +81,37 @@ function App() {
         return res.json();
       })
       .then((res) => {
-        setnotes(res.reverse());
+        const resnotes = res.reverse();
+        notebkup.current = resnotes;
+        setnotes(resnotes);
       });
   }
 
   function addnotes(text: string) {
-    const id = String(Number(notes[notes.length - 1].id) + 1);
+    const id = String(
+      Number(
+        notes.reduce((a: any, n: any) => {
+          return a > Number(n.id) ? a : Number(n.id);
+        }, 1) + 1
+      )
+    );
+
+    const date = Date.now();
+
+    // const formattedDate = new Intl.DateTimeFormat('en-GB', {
+    //   day: '2-digit',
+    //   month: '2-digit',
+    //   year: 'numeric'
+    // }).format(date);
+
+    // console.log({date, formattedDate});
 
     fetch("http://localhost:4000/notes", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ id, text }),
+      body: JSON.stringify({ id, text, date_added: date, date_modified: -1 }),
     }).then(() => {
       notetext.current.value = "";
       fetchnotes();
@@ -112,6 +141,62 @@ function App() {
     deletenotes(i);
   }
 
+  function updatenote(id: any, index: number) {
+    const _id = id;
+    const _index = index;
+
+    return function (e: any) {
+      const value = noteRefs.current[_index].value;
+      const date = Date.now();
+
+      if (value.length) {
+        //patch
+        fetch(`http://localhost:4000/notes/${_id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            text: value,
+            date_modified: date,
+          }),
+        }).then(() => {
+          noteRefs.current[_index].value = "";
+          fetchnotes();
+        });
+
+        //put
+        // fetch(`http://localhost:4000/notes/${_id}`, {
+        //   method: "PUT",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify({
+        //     id: _id,
+        //     text: value,
+        //   }),
+        // }).then(() => {
+        //   noteRefs.current[_index].value = "";
+        //   fetchnotes();
+        // });
+      }
+    };
+  }
+
+  const handleKeyPress = function (prev: any) {
+    const _prev = prev;
+
+    // console.log({ _prev });
+
+    return function (e: any) {
+      console.log({ e });
+
+      if (e.target.value.length > 0) {
+        console.log("allow update");
+      }
+    };
+  };
+
   useEffect(() => {
     // This code runs whenever 'myProp' changes
     // console.log('myProp has changed:');
@@ -132,15 +217,97 @@ function App() {
     };
   }, []);
 
+  function sortdown() {
+    const sorted = notes
+      .map((m: any) => m)
+      .sort((a: any, b: any) => Number(a.text) - Number(b.text));
+
+    setnotes(sorted);
+  }
+
+  function search() {
+    const val = notetext.current.value;
+
+    if (val.length > 0) {
+      const filtered = notebkup.current.filter(({ text }: any) =>
+        text.includes(val)
+      );
+      setnotes(filtered);
+    }
+  }
+
+  const t = [20, 30, 40, 50, 60];
+
+  const tt = t.map(ttt);
+
+  console.log(tt);
+
+  function ttt(t: number, i: number) {
+    return t * i;
+  }
+
+  // for (let n of range(0,100,20)) {
+  //   console.log(n);
+  // }
+
+  const test1 = {
+    name: "ty",
+    age: 38,
+  };
+
+  function testfn(this: any, o: any, z: any) {
+    console.log({ o, z });
+    console.log(`hi my name is ${this.name} and i am ${this.age} yrs ${o}`);
+  }
+
+  const mybind = testfn.mybind(test1, "yo", "mama");
+
+  mybind("to");
+
+  const sum = (a: number) => {
+    return (b: number) => {
+      if (b) return sum(a + b);
+      return a;
+    };
+  };
+
+  //@ts-ignore
+  const ans = sum(3)(4)(3)();
+
+  console.log(ans);
+
   return (
     <div className="App">
       <input ref={notetext} type="text" onKeyUp={debouncedkey} />
       <button onClick={handlenoteclick}>add</button>
-
-      {notes.map((m: any) => {
+      <button onClick={search}>search</button>
+      <br />
+      <br />
+      total: {notes.length}
+      <br />
+      <br />
+      <button
+        onClick={() =>
+          setnotes((prev: any) =>
+            prev
+              .map((m: any) => m)
+              .sort((a: any, b: any) => Number(b.text) - Number(a.text))
+          )
+        }
+      >
+        sort high
+      </button>
+      <button onClick={sortdown}>sort low</button>
+      {notes.map((m: any, i: number) => {
         return (
           <div>
-            {m.text}
+            <input
+              ref={(el) => (noteRefs.current[i] = el)}
+              type="text"
+              placeholder={m.text}
+              onKeyUp={handleKeyPress(m.text)}
+            />
+            <button onClick={updatenote(m.id, i)}>update</button>
             <button data-id={m.id} onClick={handlenoteremove}>
               remove
             </button>

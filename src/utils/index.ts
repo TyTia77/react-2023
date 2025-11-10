@@ -1,5 +1,16 @@
 export { debounce as debounce } from "./debounce";
 export { throttle as throttle } from "./throttle";
+export * from './playground';
+export * from './prototype';
+
+export function Config () {
+  const settings = {
+    localhost: 'http://localhost:4000/',
+  }
+
+
+}
+
 
 // class
 export class Test {
