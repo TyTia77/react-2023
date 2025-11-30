@@ -15,7 +15,7 @@ export const Window = memo(function(props: IWindowProps){
 
   return (
     <div
-      className="Window"
+      className="window"
       style={{
         border: selected ? "none" : "1px solid black",
         top: y,

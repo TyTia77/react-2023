@@ -1,7 +1,7 @@
 import React from "react";
 import { reducer } from './reducer';
 
-export function Page3(props: { params1?: number }) {
+function Page3(props: { params1?: number }) {
   const { params1 } = props;
 
   const initialState = { age: 0 }
@@ -19,3 +19,5 @@ export function Page3(props: { params1?: number }) {
     </div>
   );
 }
+
+export default Page3
