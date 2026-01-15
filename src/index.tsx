@@ -12,6 +12,8 @@ import { BrowserRouter, Routes, Route } from "react-router";
 import { MenuWindow, MouseMoveProvider } from "./components";
 
 
+import MenuBar from './routes/menu/menubar'
+
 // const store = createStore(rootReducer);
 
 import configureStore from "store/configurestore";
@@ -46,7 +48,8 @@ root.render(
     <Provider store={store}>
       <BrowserRouter>
         <MouseMoveProvider>
-          <MenuWindow>
+          <MenuBar />
+          {/* <MenuWindow> */}
             <Suspense fallback={<div>loading</div>}>
               <Routes>
                 <Route path="/" element={<App />} />
@@ -57,7 +60,7 @@ root.render(
                 <Route path="/page5" element={<Page5 />} />
               </Routes>
             </Suspense>
-          </MenuWindow>
+          {/* </MenuWindow> */}
         </MouseMoveProvider>
       </BrowserRouter>
     </Provider>

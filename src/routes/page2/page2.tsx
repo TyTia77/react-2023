@@ -10,13 +10,24 @@ import {
   IWindowProps,
   MouseMoveContext,
   ComponentToggler,
+  AlertDialog,
+  ComponentSize,
 } from "components";
 import { throttle, getRand } from "utils";
-import { useToggle, useWindowSize, useEventListener } from "hooks";
+import { useToggle } from "hooks";
 import SelectBox from "./selectbox";
+
+import { useTheme } from "@mui/material/styles";
+import AddIcon from "@mui/icons-material/Add";
+import Zoom from "@mui/material/Zoom";
+import Fab from "@mui/material/Fab";
+import { green } from "@mui/material/colors";
+import { SxProps } from "@mui/system";
+import { Typography } from "@mui/material";
 
 interface IwindowsProps extends IWindowProps {
   id: number;
+  size: any;
 
   // mouse x,y position relative to window x,y position
   mx: number;
@@ -41,6 +52,8 @@ function Page2() {
   const [testx, setx] = useState(-1);
   const [testy, sety] = useState(-1);
 
+  const windowPadding = 10;
+
   useEffect(() => {
     throttle(() => {
       if (active && x && y) {
@@ -54,6 +67,31 @@ function Page2() {
       }
     }, 200)();
   }, [x, y]);
+
+  const theme = useTheme();
+
+  const fabStyle = {
+    position: "absolute",
+    bottom: 16,
+    right: 16,
+  };
+
+  const fabGreenStyle = {
+    color: "common.white",
+    bgcolor: green[500],
+    "&:hover": {
+      bgcolor: green[600],
+    },
+  };
+
+  const fabs = [
+    {
+      color: "primary" as const,
+      sx: fabStyle as SxProps,
+      icon: <AddIcon />,
+      label: "Add",
+    },
+  ];
 
   return (
     <div
@@ -75,11 +113,12 @@ function Page2() {
 
           windows.forEach((m, i) => {
             // top left
-            const { x: wsx, y: wsy } = m;
+            const wsx = m.x - windowPadding;
+            const wsy = m.y - windowPadding;
 
             // bottom right
-            const wex = m.x + 32;
-            const wey = m.y + 18;
+            const wex = m.x + m.size.width;
+            const wey = m.y + m.size.height;
 
             // drag start/top left
             const dsx = Math.min(windowDragS.x, e.clientX);
@@ -130,37 +169,51 @@ function Page2() {
         }
       }}
     >
-      create movable windows. button on the bottom right
-      <br />
-      standard select behaviour. shift/drag to multi-select
-      <br />
-      <br />
-      <button
-        // prevent bubbling to parent
-        onMouseDown={(e) => e.stopPropagation()}
-        onMouseUp={(e) => e.stopPropagation()}
-        onClick={(e: React.MouseEvent<HTMLElement>) => {
-          e.stopPropagation();
-
-          const x = getRand(300);
-          const y = getRand(300);
-
-          setwindows((prev) =>
-            prev.concat({
-              id: ++initID.current,
-              label: `id: ${initID.current}`,
-              x,
-              y,
-              mx: -1,
-              my: -1,
-              selected: false,
-            })
-          );
+      <AlertDialog
+        title="Tip"
+        text="create movable windows. add window button on the bottom right, standard select behaviour. shift/drag to multi-select"
+      />
+      <Zoom
+        key={"primary" as const}
+        in={true}
+        timeout={{
+          enter: theme.transitions.duration.enteringScreen,
+          exit: theme.transitions.duration.leavingScreen,
         }}
-        style={{ position: "absolute", display: "block", bottom: 0, right: 0 }}
+        style={{
+          transitionDelay: `${theme.transitions.duration.leavingScreen}ms`,
+        }}
+        unmountOnExit
       >
-        add window
-      </button>
+        <Fab
+          sx={fabStyle as SxProps}
+          aria-label={"Add"}
+          color={"primary" as const}
+          onMouseDown={(e) => e.stopPropagation()}
+          onMouseUp={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+
+            const x = getRand(300);
+            const y = getRand(300);
+
+            setwindows((prev) =>
+              prev.concat({
+                id: ++initID.current,
+                label: `id: ${initID.current}`,
+                x,
+                y,
+                mx: -1,
+                my: -1,
+                selected: false,
+                size: {},
+              })
+            );
+          }}
+        >
+          <AddIcon />
+        </Fab>
+      </Zoom>
       <ComponentToggler active={activeDrag}>
         <div
           id="drag"
@@ -173,8 +226,20 @@ function Page2() {
           <SelectBox x={testx} y={testy} />
         </div>
       </ComponentToggler>
-      {windows.map(
-        (t: any) =>
+      {windows.map((t: any) => {
+        // fix/cleanup
+        function updatesize(newsize: any) {
+          setwindows((prev: any) => {
+            return prev.map((m: any) => {
+              if (m.id === t.id) {
+                m = { ...m, ...newsize };
+              }
+              return m;
+            });
+          });
+        }
+
+        return (
           t && (
             <div
               id="window"
@@ -217,10 +282,17 @@ function Page2() {
                 }
               }}
             >
-              <Window label={t.label} x={t.x} y={t.y}></Window>
+              <Window x={t.x} y={t.y}>
+                <ComponentSize fn={updatesize}>
+                  <Typography style={{ padding: `${windowPadding}px` }}>
+                    {t.label}
+                  </Typography>
+                </ComponentSize>
+              </Window>
             </div>
           )
-      )}
+        );
+      })}
       {activeWindow.map((t: any) => {
         return (
           <div
@@ -236,7 +308,11 @@ function Page2() {
               );
             }}
           >
-            <Window label={t.label} x={t.x} y={t.y} selected={true}></Window>
+            <Window x={t.x} y={t.y} selected={true}>
+              <Typography style={{ padding: `${windowPadding - 1}px` }}>
+                {t.label}
+              </Typography>
+            </Window>
           </div>
         );
       })}
