@@ -1,17 +1,17 @@
 import React from "react";
-import { reducer } from './reducer';
+import { reducer } from "./reducer";
 
 function Page3(props: { params1?: number }) {
   const { params1 } = props;
 
-  const initialState = { age: 0 }
+  const initialState = { age: 0 };
   const [state, dispatch] = React.useReducer(reducer, initialState);
-  
-  const increase = () => dispatch({ type: 'incremented_age' });
-  const decrease = () => dispatch({ type: 'decrement_age'})
-  
+
+  const increase = () => dispatch({ type: "incremented_age" });
+  const decrease = () => dispatch({ type: "decrement_age" });
+
   return (
-    <div style={{backgroundColor: "lightblue"}}>
+    <div>
       <div>react reducer example</div>
       <div>{state.age}</div>
       <button onClick={increase}>increase</button>
@@ -20,4 +20,4 @@ function Page3(props: { params1?: number }) {
   );
 }
 
-export default Page3
+export default Page3;
