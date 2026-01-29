@@ -1,8 +1,12 @@
-import { useEffect } from "react"
-import { useTimeout } from "./index"
+import { useEffect } from "react";
+import { useTimeout } from "./index";
 
-export default function useDebounce(callback: () => void, delay: number, dependencies: any) {
-  const { reset, clear } = useTimeout(callback, delay)
-  useEffect(reset, [...dependencies, reset])
-  useEffect(clear, [])
+export function useDebounce(
+  callback: () => void,
+  delay: number,
+  dependencies: any
+) {
+  const { reset, clear } = useTimeout(callback, delay);
+  useEffect(reset, [...dependencies, reset]);
+  useEffect(clear, []);
 }
