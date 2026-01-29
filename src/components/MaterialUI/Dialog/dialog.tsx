@@ -6,7 +6,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
-export const AlertDialog = ({ title = "", text = "" }) => {
+export const AlertDialog = ({ title = "", text = "", cb }: any) => {
   const [open, setOpen] = React.useState(true);
 
   const handleClickOpen = () => {
@@ -15,6 +15,7 @@ export const AlertDialog = ({ title = "", text = "" }) => {
 
   const handleClose = () => {
     setOpen(false);
+    cb && cb();
   };
 
   return (

@@ -7,10 +7,8 @@ import React, {
   useEffect,
 } from "react";
 import { Window } from "components";
-import { Menu } from "routes/menu/menu";
+// import { Menu } from "routes/menu/menu";
 import { throttle } from "utils";
-
-
 
 export function MenuWindow({ children }: { children: ReactNode }) {
   const init = useRef(false);
@@ -65,9 +63,8 @@ export function MenuWindow({ children }: { children: ReactNode }) {
   }, [menuX, menuY]);
 
   useEffect(() => {
-    console.log('menuwin rerender');
-    
-  }, [])
+    console.log("menuwin rerender");
+  }, []);
 
   return (
     <div
@@ -80,7 +77,7 @@ export function MenuWindow({ children }: { children: ReactNode }) {
       }}
     >
       <Window x={menuX} y={menuY}>
-        <Menu fn={toggleactivemenu} />
+        {/* <Menu fn={toggleactivemenu} /> */}
       </Window>
       {children}
     </div>
