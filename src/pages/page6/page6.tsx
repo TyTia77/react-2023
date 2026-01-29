@@ -1,15 +1,12 @@
 import React, { useEffect } from "react";
 import logo from "./logo.svg";
-import "./App.css";
-import { Test } from "./utils";
+import "./page6.css";
 
-import { Window } from "./components/index";
+import { Window, Button } from "components";
+import { throttle, debounce, Test } from "utils";
+import { useFetch } from "hooks";
 
-import { throttle, debounce } from "./utils";
-
-import { useFetch } from "./hooks";
-
-function App() {
+function Page6() {
   // const prom = new Promise(function(res, rej){
   //   setTimeout(function(){
   //     res({})
@@ -60,8 +57,6 @@ function App() {
   const notetext: any = React.useRef(null);
   const noteRefs: any = React.useRef([]);
   const [notes, setnotes]: any[] = React.useState([]);
-  
-
 
   function handleKeyUp(e: any) {
     console.log("fetching data");
@@ -236,51 +231,12 @@ function App() {
     }
   }
 
-  const t = [20, 30, 40, 50, 60];
-
-  const tt = t.map(ttt);
-
-  console.log(tt);
-
-  function ttt(t: number, i: number) {
-    return t * i;
-  }
-
-  // for (let n of range(0,100,20)) {
-  //   console.log(n);
-  // }
-
-  const test1 = {
-    name: "ty",
-    age: 38,
-  };
-
-  function testfn(this: any, o: any, z: any) {
-    console.log({ o, z });
-    console.log(`hi my name is ${this.name} and i am ${this.age} yrs ${o}`);
-  }
-
-  const mybind = testfn.mybind(test1, "yo", "mama");
-
-  mybind("to");
-
-  const sum = (a: number) => {
-    return (b: number) => {
-      if (b) return sum(a + b);
-      return a;
-    };
-  };
-
-  //@ts-ignore
-  const ans = sum(3)(4)(3)();
-
-  console.log(ans);
-
   return (
     <div className="App">
       <input ref={notetext} type="text" onKeyUp={debouncedkey} />
       <button onClick={handlenoteclick}>add</button>
       <button onClick={search}>search</button>
+      <Button />
       <br />
       <br />
       total: {notes.length}
@@ -318,4 +274,4 @@ function App() {
   );
 }
 
-export default App;
+export default Page6;
