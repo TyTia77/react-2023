@@ -1,30 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { withState, ComponentToggler } from "components";
 import { withFacade } from "./facade";
-import { useThrottle, useEventListener } from "hooks";
-
-import { MouseMoveListener } from "./mouseListener";
+import { useEventListening } from "hooks";
 
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 
 export function Page4(props: any) {
-  console.log({ props });
+  const { count } = props;
 
   const [mouse, setmouse]: any = useState(false);
   const [x, setx]: any = useState(0);
   const [y, sety]: any = useState(0);
 
-  const { count } = props;
-
-  MouseMoveListener({
-    active: mouse,
-    cb: (e: any) => {
+  useEventListening(
+    (e: any) => {
       setx(e.clientX);
       sety(e.clientY);
-      console.log("throttle", { e });
     },
-  });
+    "mousemove",
+    mouse,
+    30
+  );
 
   return (
     <Container>
@@ -38,4 +35,4 @@ export function Page4(props: any) {
   );
 }
 
-// export default withState(withFacade(Page4));
+export default withState(withFacade(Page4));

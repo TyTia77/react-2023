@@ -25,7 +25,7 @@ const Playground = lazyDelay(import("./pages/playground/playground"), loadTime);
 const Page1 = lazyDelay(import("./pages/page1/page1"), loadTime);
 const Page2 = lazyDelay(import("./pages/page2/page2"), loadTime);
 const Page3 = lazyDelay(import("./pages/page3/page3"), loadTime);
-const Page4 = lazyDelay(import("./pages/page4"), loadTime);
+const Page4 = lazyDelay(import("./pages/page4/page4"), loadTime);
 const Page5 = lazyDelay(import("./pages/page5/page5"), loadTime);
 const Page6 = lazyDelay(import("./pages/page6/page6"), loadTime);
 

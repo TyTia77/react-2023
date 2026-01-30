@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useThrottle } from "hooks";
 
 export function useEventListener(
   eventType: string,
@@ -18,4 +19,20 @@ export function useEventListener(
 
     return () => element.removeEventListener(eventType, handler);
   }, [eventType, element]);
+}
+
+export function useEventListening(
+  cb: Function,
+  event: string,
+  active = false,
+  delay = 200
+) {
+  const [track, setTrack] = useState(active);
+  useEffect(() => setTrack(active), [active]);
+
+  //@ts-ignore
+  const throttledCB = useThrottle((e: MouseEvent) => cb(e), delay);
+
+  //@ts-ignore
+  useEventListener(event, throttledCB, track ? window : null);
 }

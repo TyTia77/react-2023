@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocalStorage, useArray } from "hooks";
+import { useLocalStorage, useArray, useStateWithHistory } from "hooks";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
@@ -7,7 +7,6 @@ import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import TextField from "@mui/material/TextField";
 import Container from "@mui/material/Container";
-import Divider from "@mui/material/Divider";
 
 const storageKey = "test";
 
@@ -18,15 +17,20 @@ function Page1(props: { params1?: number }) {
   const [value, setValue] = useLocalStorage(storageKey, []);
   const { array, push: addNotes, clear: clearNotes }: any = useArray(value);
 
+  const [val, set, options] = useStateWithHistory(array);
+
   useEffect(() => {
     setValue(array);
+    set(array);
     setSearchText("");
   }, [array]);
 
+  console.log({ val, options });
+
   return (
-    <>
+    <Box component="section" sx={{ p: 2 }}>
       <Box component="section" sx={{ p: 2 }}>
-        <Container maxWidth="sm">
+        <Container>
           <TextField
             id="standard-basic"
             label="text"
@@ -70,7 +74,7 @@ function Page1(props: { params1?: number }) {
           })}
         </Stack>
       </Box>
-    </>
+    </Box>
   );
 }
 

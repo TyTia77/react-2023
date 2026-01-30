@@ -19,8 +19,6 @@ export const ComponentSize = ({ fn, children, ...rest }: any) => {
   }, [size]); // Empty dependency array ensures this runs only once on mount
 
   useEffect(() => {
-    // @ts-ignore
-    console.log({ dimensions }, elementRef.current);
     if (fn) fn({ size: { ...dimensions } });
   }, [dimensions]);
 

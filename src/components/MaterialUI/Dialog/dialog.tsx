@@ -5,6 +5,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import { createPortal } from "react-dom";
 
 export const AlertDialog = ({ title = "", text = "", cb }: any) => {
   const [open, setOpen] = React.useState(true);
@@ -18,7 +19,7 @@ export const AlertDialog = ({ title = "", text = "", cb }: any) => {
     cb && cb();
   };
 
-  return (
+  return createPortal(
     <React.Fragment>
       <Dialog
         open={open}
@@ -38,6 +39,8 @@ export const AlertDialog = ({ title = "", text = "", cb }: any) => {
           </Button>
         </DialogActions>
       </Dialog>
-    </React.Fragment>
+    </React.Fragment>,
+    //@ts-ignore
+    document.getElementById("root")
   );
 };

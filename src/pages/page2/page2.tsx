@@ -9,7 +9,6 @@ import {
   Window,
   IWindowProps,
   MouseMoveContext,
-  ComponentToggler,
   AlertDialog,
   ComponentSize,
   Button,
@@ -17,9 +16,9 @@ import {
 } from "components";
 import { withFacade } from "./facade";
 import { throttle, getRand } from "utils";
-import { useToggle } from "hooks";
-import SelectBox from "./selectbox";
+import { useToggle, useEventListening } from "hooks";
 
+import SelectionBox from "features/SelectionBox/selectionBox";
 import { Typography } from "@mui/material";
 
 interface IwindowsProps extends IWindowProps {
@@ -32,18 +31,18 @@ interface IwindowsProps extends IWindowProps {
 }
 
 function Page2(props: any) {
-  const { initTip, tipExecuted } = props;
-
-  const [containerSize, setContainerSize] = useState({
-    height: 0,
-    top: 0,
-    left: 0,
-    width: 0,
-  });
+  const {
+    initTip,
+    tipExecuted,
+    containerSize,
+    setContainerSize,
+    session,
+    setSession,
+  } = props;
 
   const { x, y, toggleactive } = useContext(MouseMoveContext);
 
-  const initID = useRef(0);
+  const initID = useRef(session.initID);
 
   // recording mouse movement from provider
   const [active, setActive] = useToggle();
@@ -51,13 +50,19 @@ function Page2(props: any) {
 
   const [windowDragS, setWindowDragS] = useState({ x: -1, y: -1 });
 
-  const [windows, setwindows] = useState<IwindowsProps[]>([]);
-  const [activeWindow, setActiveWindow] = useState<IwindowsProps[]>([]);
+  const [windows, setwindows] = useState<IwindowsProps[]>(session.windows);
+  const [activeWindow, setActiveWindow] = useState<IwindowsProps[]>(
+    session.activeWindow
+  );
 
   const [testx, setx] = useState(-1);
   const [testy, sety] = useState(-1);
 
   const windowPadding = 10;
+
+  useEffect(() => {
+    setSession({ windows, activeWindow, initID: initID.current });
+  }, [windows, activeWindow]);
 
   useEffect(() => {
     throttle(() => {
@@ -72,6 +77,29 @@ function Page2(props: any) {
       }
     }, 200)();
   }, [x, y]);
+
+  // useEventListener("keyup", (e: any) => {
+  //   if (e.key === "Backspace") {
+  //     if (activeWindow.length) setActiveWindow([]);
+  //   }
+  // });
+
+  useEventListening(
+    (e: any) => {
+      if (e.key === "Backspace") {
+        if (activeWindow.length) setActiveWindow([]);
+      }
+    },
+    "keyup",
+    activeWindow.length > 0
+  );
+
+  // useEventListening((e:any) => {
+  //     console.log("from new even", e);
+  //   },
+  //   "mousemove",
+  //   activeWindow.length > 0
+  // );
 
   return (
     <ComponentSize fn={({ size }: any) => setContainerSize({ ...size })}>
@@ -93,8 +121,6 @@ function Page2(props: any) {
             let win: IwindowsProps[] = [];
 
             windows.forEach((m, i) => {
-              console.log({ m });
-
               // top left
               const wsx = m.x - windowPadding;
               const wsy = m.y - windowPadding;
@@ -182,18 +208,7 @@ function Page2(props: any) {
             );
           }}
         />
-        <ComponentToggler active={activeDrag}>
-          <div
-            id="drag"
-            style={{
-              position: "absolute",
-              left: testx,
-              top: testy,
-            }}
-          >
-            <SelectBox x={testx} y={testy} />
-          </div>
-        </ComponentToggler>
+
         {windows.map((t: any) => {
           // fix/cleanup
           function updatesize(newsize: any) {
@@ -284,6 +299,7 @@ function Page2(props: any) {
             </div>
           );
         })}
+        <SelectionBox active={activeDrag} x={testx} y={testy} />
       </div>
     </ComponentSize>
   );
