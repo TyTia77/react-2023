@@ -27,7 +27,6 @@ function SelectionBox({ x = 0, y = 0 }) {
 
   return (
     <div
-      id="drag"
       style={{
         border: "1px solid grey",
         left: x,

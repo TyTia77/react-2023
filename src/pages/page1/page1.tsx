@@ -7,6 +7,7 @@ import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import TextField from "@mui/material/TextField";
 import Container from "@mui/material/Container";
+import _ from "lodash";
 
 const storageKey = "test";
 
@@ -15,17 +16,31 @@ function Page1(props: { params1?: number }) {
 
   const [searchText, setSearchText] = useState("");
   const [value, setValue] = useLocalStorage(storageKey, []);
-  const { array, push: addNotes, clear: clearNotes }: any = useArray(value);
+  const [val, set, options] = useStateWithHistory(value);
 
-  const [val, set, options] = useStateWithHistory(array);
+  const {
+    array,
+    set: setArray,
+    push: addNotes,
+    clear: clearNotes,
+  }: any = useArray(value);
 
   useEffect(() => {
     setValue(array);
     set(array);
     setSearchText("");
+
+    if (options.pointer === 5) {
+      options.go(2);
+      console.log("change", { val });
+    }
   }, [array]);
 
-  console.log({ val, options });
+  useEffect(() => {
+    if (!_.isEqual(val, array)) {
+      setArray(val);
+    }
+  }, [val]);
 
   return (
     <Box component="section" sx={{ p: 2 }}>

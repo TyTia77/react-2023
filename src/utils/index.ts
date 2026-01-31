@@ -3,6 +3,7 @@ export { throttle as throttle } from "./throttle";
 export * from "./playground";
 export * from "./prototype";
 export * from "./delayLazy";
+export * from "./selectionBox";
 
 export function Config() {
   const settings = {

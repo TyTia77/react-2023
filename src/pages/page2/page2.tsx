@@ -15,7 +15,7 @@ import {
   withState,
 } from "components";
 import { withFacade } from "./facade";
-import { throttle, getRand } from "utils";
+import { throttle, getRand, selectionBox } from "utils";
 import { useToggle, useEventListening } from "hooks";
 
 import SelectionBox from "features/SelectionBox/selectionBox";
@@ -40,25 +40,19 @@ function Page2(props: any) {
     setSession,
   } = props;
 
+  const windowPadding = 10;
+
   const { x, y, toggleactive } = useContext(MouseMoveContext);
 
+  const [dragX, setDragX] = useState(-1);
+  const [dragY, setDragY] = useState(-1);
+  const [windowMove, toggleWindowMove] = useToggle();
+
   const initID = useRef(session.initID);
-
-  // recording mouse movement from provider
-  const [active, setActive] = useToggle();
-  const [activeDrag, setActiveDrag] = useToggle();
-
-  const [windowDragS, setWindowDragS] = useState({ x: -1, y: -1 });
-
   const [windows, setwindows] = useState<IwindowsProps[]>(session.windows);
   const [activeWindow, setActiveWindow] = useState<IwindowsProps[]>(
     session.activeWindow
   );
-
-  const [testx, setx] = useState(-1);
-  const [testy, sety] = useState(-1);
-
-  const windowPadding = 10;
 
   useEffect(() => {
     setSession({ windows, activeWindow, initID: initID.current });
@@ -66,7 +60,7 @@ function Page2(props: any) {
 
   useEffect(() => {
     throttle(() => {
-      if (active && x && y) {
+      if (windowMove && x && y) {
         const mapped = activeWindow.map((aw) => ({
           ...aw,
           x: x - aw.mx,
@@ -109,56 +103,88 @@ function Page2(props: any) {
           height: "100vh",
           width: "100vw",
         }}
-        onMouseUp={function (e: any) {
-          if (active && toggleactive) {
-            setActive(false);
-            toggleactive();
-          }
+        onMouseMove={throttle((e: any) => {
+          if (dragX >= 0 || dragY >= 0) {
+            let win: IwindowsProps[] = [],
+              activeWin: IwindowsProps[] = [];
 
-          if (activeDrag) {
-            setActiveDrag(false);
+            // drag start/top left
+            const dsx = Math.min(dragX, e.clientX);
+            const dsy = Math.min(dragY, e.clientY);
 
-            let win: IwindowsProps[] = [];
+            // drag end/ bottom right
+            const dex = Math.max(dragX, e.clientX);
+            const dey = Math.max(dragY, e.clientY);
 
-            windows.forEach((m, i) => {
+            const isSelected = selectionBox(dsx, dsy, dex, dey);
+
+            windows.concat(activeWindow).forEach((m, i) => {
               // top left
-              const wsx = m.x - windowPadding;
-              const wsy = m.y - windowPadding;
+              const wsx = m.x;
+              const wsy = m.y;
 
               // bottom right
               const wex = m.x + m.size.width;
               const wey = m.y + m.size.height;
 
-              // drag start/top left
-              const dsx = Math.min(windowDragS.x, e.clientX);
-              const dsy = Math.min(windowDragS.y, e.clientY);
-
-              // drag end/ bottom right
-              const dex = Math.max(windowDragS.x, e.clientX);
-              const dey = Math.max(windowDragS.y, e.clientY);
-
-              if (
-                // within drag x
-                (wsx >= dsx && wsx <= dex) ||
-                (wex >= dsx && wex <= dex) ||
-                // outside drag x
-                (dsx >= wsx && dex <= wex)
-              ) {
-                if (
-                  // within drag y
-                  (wsy >= dsy && wsy <= dey) ||
-                  (wey >= dsy && wey <= dey) ||
-                  // outside drag y
-                  (dsy >= wsy && dey <= wey)
-                ) {
-                  setActiveWindow((prev) => prev.concat(m));
-                  return;
-                }
-              }
-              win.push(m);
+              isSelected(wsx, wsy, wex, wey) ? activeWin.push(m) : win.push(m);
             });
 
+            setActiveWindow(activeWin);
             setwindows(win);
+          }
+        }, 300)}
+        onMouseUp={function (e: any) {
+          if (windowMove && toggleactive) {
+            toggleWindowMove(false);
+            toggleactive();
+          }
+
+          if (dragX >= 0 || dragY >= 0) {
+            // let win: IwindowsProps[] = [];
+
+            // windows.forEach((m, i) => {
+            //   // top left
+            //   const wsx = m.x - windowPadding;
+            //   const wsy = m.y - windowPadding;
+
+            //   // bottom right
+            //   const wex = m.x + m.size.width;
+            //   const wey = m.y + m.size.height;
+
+            //   // drag start/top left
+            //   const dsx = Math.min(dragX, e.clientX);
+            //   const dsy = Math.min(dragY, e.clientY);
+
+            //   // drag end/ bottom right
+            //   const dex = Math.max(dragX, e.clientX);
+            //   const dey = Math.max(dragY, e.clientY);
+
+            //   if (
+            //     // within drag x
+            //     (wsx >= dsx && wsx <= dex) ||
+            //     (wex >= dsx && wex <= dex) ||
+            //     // outside drag x
+            //     (dsx >= wsx && dex <= wex)
+            //   ) {
+            //     if (
+            //       // within drag y
+            //       (wsy >= dsy && wsy <= dey) ||
+            //       (wey >= dsy && wey <= dey) ||
+            //       // outside drag y
+            //       (dsy >= wsy && dey <= wey)
+            //     ) {
+            //       setActiveWindow((prev) => prev.concat(m));
+            //       return;
+            //     }
+            //   }
+            //   win.push(m);
+            // });
+
+            // setwindows(win);
+
+            setDragX(-1);
+            setDragY(-1);
           }
         }}
         onMouseDown={function (e: any) {
@@ -167,24 +193,15 @@ function Page2(props: any) {
             setwindows(windows.concat(t));
             setActiveWindow([]);
 
-            setx(e.clientX);
-            sety(e.clientY);
-
-            setActiveDrag(true);
-            setWindowDragS({ x: e.clientX, y: e.clientY });
+            setDragX(e.clientX);
+            setDragY(e.clientY);
           } else {
-            setActive(true);
+            toggleWindowMove();
             toggleactive && toggleactive();
           }
         }}
       >
-        {!initTip && (
-          <AlertDialog
-            cb={tipExecuted}
-            title="Tip"
-            text="create movable windows. add window button on the bottom right, standard select behaviour. shift/drag to multi-select"
-          />
-        )}
+        <Box sx={{ "& > :not(style)": { m: 1 } }}>
         <Button
           onMouseDown={(e: MouseEvent) => e.stopPropagation()}
           onMouseUp={(e: MouseEvent) => e.stopPropagation()}
@@ -299,7 +316,15 @@ function Page2(props: any) {
             </div>
           );
         })}
-        <SelectionBox active={activeDrag} x={testx} y={testy} />
+
+        {!initTip && (
+          <AlertDialog
+            cb={tipExecuted}
+            title="Tip"
+            text="create movable windows. add window button on the bottom right, standard select behaviour. shift/drag to multi-select"
+          />
+        )}
+        <SelectionBox active={dragX >= 0 || dragY >= 0} x={dragX} y={dragY} />
       </div>
     </ComponentSize>
   );
