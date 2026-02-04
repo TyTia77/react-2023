@@ -6,6 +6,8 @@ import { Window, Button } from "components";
 import { throttle, debounce, Test } from "utils";
 import { useFetch } from "hooks";
 
+const label = "notes";
+
 function Page6() {
   // const prom = new Promise(function(res, rej){
   //   setTimeout(function(){
@@ -58,6 +60,10 @@ function Page6() {
   const noteRefs: any = React.useRef([]);
   const [notes, setnotes]: any[] = React.useState([]);
 
+  const fet = useFetch(`http://localhost:4000/${label}`);
+
+  console.log({ fet });
+
   function handleKeyUp(e: any) {
     console.log("fetching data");
 
@@ -71,7 +77,7 @@ function Page6() {
   const debouncedkey = debounce(handleKeyUp, 500);
 
   function fetchnotes() {
-    fetch("http://localhost:4000/notes")
+    fetch(`http://localhost:4000/${label}`)
       .then((res) => {
         return res.json();
       })
@@ -101,7 +107,7 @@ function Page6() {
 
     // console.log({date, formattedDate});
 
-    fetch("http://localhost:4000/notes", {
+    fetch(`http://localhost:4000/${label}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -114,9 +120,9 @@ function Page6() {
   }
 
   function deletenotes(id: string) {
-    console.log(`http://localhost:4000/notes/${id}`);
+    console.log(`http://localhost:4000/${label}/${id}`);
 
-    fetch(`http://localhost:4000/notes/${id}`, {
+    fetch(`http://localhost:4000/${label}/${id}`, {
       method: "DELETE",
     }).then(() => {
       fetchnotes();
@@ -146,7 +152,7 @@ function Page6() {
 
       if (value.length) {
         //patch
-        fetch(`http://localhost:4000/notes/${_id}`, {
+        fetch(`http://localhost:4000/${label}/${_id}`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",

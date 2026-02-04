@@ -20,6 +20,9 @@ import { useToggle, useEventListening } from "hooks";
 
 import SelectionBox from "features/SelectionBox/selectionBox";
 import { Typography } from "@mui/material";
+import Box from "@mui/material/Box";
+import Fab from "@mui/material/Fab";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface IwindowsProps extends IWindowProps {
   id: number;
@@ -51,6 +54,9 @@ function Page2(props: any) {
   const initID = useRef(session.initID);
   const [windows, setwindows] = useState<IwindowsProps[]>(session.windows);
   const [activeWindow, setActiveWindow] = useState<IwindowsProps[]>(
+    session.activeWindow
+  );
+  const [activeWindowCopy, setActiveWindowCopy] = useState<IwindowsProps[]>(
     session.activeWindow
   );
 
@@ -138,6 +144,7 @@ function Page2(props: any) {
           if (windowMove && toggleactive) {
             toggleWindowMove(false);
             toggleactive();
+            setActiveWindowCopy([]);
           }
 
           if (dragX >= 0 || dragY >= 0) {
@@ -192,6 +199,7 @@ function Page2(props: any) {
             const t = activeWindow.map((m) => ({ ...m, mx: -1, my: -1 }));
             setwindows(windows.concat(t));
             setActiveWindow([]);
+            setActiveWindowCopy([]);
 
             setDragX(e.clientX);
             setDragY(e.clientY);
@@ -201,12 +209,28 @@ function Page2(props: any) {
           }
         }}
       >
-        <Box sx={{ "& > :not(style)": { m: 1 } }}>
-        <Button
-          onMouseDown={(e: MouseEvent) => e.stopPropagation()}
-          onMouseUp={(e: MouseEvent) => e.stopPropagation()}
-          onClick={(e: MouseEvent) => {
-            e.stopPropagation();
+        <Box
+          sx={{
+            "& > :not(style)": { m: 1 },
+
+            position: "fixed",
+            bottom: "16px",
+            right: "16px",
+          }}
+        >
+          <Fab
+            color="error"
+            aria-label="delete"
+            disabled={activeWindow.length === 0}
+            onClick={() => setActiveWindow([])}
+          >
+            <DeleteIcon />
+          </Fab>
+          <Button
+            onMouseDown={(e: MouseEvent) => e.stopPropagation()}
+            onMouseUp={(e: MouseEvent) => e.stopPropagation()}
+            onClick={(e: MouseEvent) => {
+              e.stopPropagation();
 
             const x = getRand(containerSize.width * 0.5, containerSize.left);
             const y = getRand(containerSize.height * 0.5, containerSize.top);
@@ -225,6 +249,7 @@ function Page2(props: any) {
             );
           }}
         />
+        </Box>
 
         {windows.map((t: any) => {
           // fix/cleanup
@@ -242,7 +267,6 @@ function Page2(props: any) {
           return (
             t && (
               <div
-                id="window"
                 key={t.id}
                 onClick={(e) => e.stopPropagation()}
                 onMouseDown={function (e: any) {
@@ -277,6 +301,7 @@ function Page2(props: any) {
                       .concat(activeWindow)
                       .map((m) => ({ ...m, mx: -1, my: -1 }));
 
+                    setActiveWindowCopy(newactive);
                     setActiveWindow(newactive);
                     setwindows(newwindow);
                   }
@@ -293,19 +318,40 @@ function Page2(props: any) {
             )
           );
         })}
+
+        {activeWindowCopy.map((t: any) => {
+          return (
+            <div
+              key={t.id}
+              onMouseDown={(e: any) => {
+                e.preventDefault(e.stopPropagation());
+              }}
+            >
+              <Window x={t.x} y={t.y} selected={true}>
+                <Typography style={{ padding: `${windowPadding - 1}px` }}>
+                  {t.label}
+                </Typography>
+              </Window>
+            </div>
+          );
+        })}
         {activeWindow.map((t: any) => {
           return (
             <div
-              id="window"
+              style={{ opacity: windowMove ? 0.8 : 1 }}
               key={t.id}
               onMouseDown={(e: any) => {
-                setActiveWindow((prev) =>
-                  prev.map((m) => ({
+                setActiveWindow((prev) => {
+                  const p = prev.map((m) => ({
                     ...m,
                     mx: e.clientX - m.x,
                     my: e.clientY - m.y,
-                  }))
-                );
+                  }));
+
+                  setActiveWindowCopy(p);
+
+                  return p;
+                });
               }}
             >
               <Window x={t.x} y={t.y} selected={true}>

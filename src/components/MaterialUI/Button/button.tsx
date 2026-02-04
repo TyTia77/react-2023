@@ -11,9 +11,9 @@ export const Button = (props: any) => {
   const theme = useTheme();
 
   const fabStyle = {
-    position: "absolute",
-    bottom: 16,
-    right: 16,
+    // position: "absolute",
+    // bottom: 16,
+    // right: 16,
   };
 
   const fabGreenStyle = {
@@ -24,14 +24,20 @@ export const Button = (props: any) => {
     },
   };
 
-//   const fabs = [
-//     {
-//       color: "primary" as const,
-//       sx: fabStyle as SxProps,
-//       icon: <AddIcon />,
-//       label: "Add",
-//     },
-//   ];
+  //   const fabs = [
+  //     {
+  //       color: "primary" as const,
+  //       sx: fabStyle as SxProps,
+  //       icon: <AddIcon />,
+  //       label: "Add",
+  //     },
+  //   ];
+
+  // add
+  // edit
+  // like
+  // extended
+  // delete
 
   return (
     // <Zoom
@@ -46,14 +52,14 @@ export const Button = (props: any) => {
     //   }}
     //   unmountOnExit
     // >
-      <Fab
-        sx={fabStyle as SxProps}
-        aria-label={"Add"}
-        color={"primary" as const}
-        {...props}
-      >
-        <AddIcon />
-      </Fab>
+    <Fab
+      // sx={fabStyle as SxProps}
+      aria-label={"Add"}
+      color={"primary" as const}
+      {...props}
+    >
+      <AddIcon />
+    </Fab>
     // </Zoom>
   );
 };
